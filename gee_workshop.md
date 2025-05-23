@@ -405,6 +405,135 @@ Map.addLayer(featureCollection, {color: 'red'}, 'Feature Collection');
 
 ### 14. Reducer
 ```javascript
+// Per-pixel time series
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2021-01-01','2021-12-31')
+           .filterBounds(polygon);
+
+// Compute per-pixel mean across time
+var meanTime = s2.reduce(ee.Reducer.mean());
+
+Map.addLayer(meanTime, {bands:['B4_mean','B3_mean','B2_mean'], min:0, max:3000}, 'Mean per Pixel over Time');
+```
+
+```javascript
+// Grouped by time
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2021-01-01','2021-12-31')
+           .filterBounds(polygon);
+var months = ee.List.sequence(1, 12);
+
+var monthlyCount = months.map(function(m) {
+  var filtered = s2.filter(ee.Filter.calendarRange(m, m, 'month'));
+  return filtered.size();
+});
+
+print('Images per month (2021):', monthlyCount);
+
+// add histogram chart
+var chart = ui.Chart.array.values(monthlyCount, 0, months)
+    .setChartType('ColumnChart')
+    .setOptions({
+      title: 'Monthly Image Count (2021)',
+      hAxis: {title: 'Month'},
+      vAxis: {title: 'Image Count'},
+      legend: {position: 'none'}
+    });
+print(chart);
+```
+
+```javascript
+// Regional statistics (reduceRegion)
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2021-01-01','2021-03-31')
+           .filterBounds(polygon);
+var meanTime = s2.reduce(ee.Reducer.mean());
+var stats = meanTime.reduceRegion({
+  reducer: ee.Reducer.mean().combine({
+    reducer2: ee.Reducer.max(),
+    sharedInputs: true
+  }),
+  geometry: polygon,
+  scale: 30
+});
+print('Mean & Max over polygon:', stats);
+```
+
+```javascript
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2021-01-01','2021-12-31')
+           .filterBounds(polygon);
+var meanTime = s2.reduce(ee.Reducer.mean());
+// Neighborhood / Focal operations (reduceNeighborhood)
+var focalMean = meanTime.reduceNeighborhood({
+  reducer: ee.Reducer.mean(),
+  kernel: ee.Kernel.square({radius: 1})
+});
+Map.addLayer(focalMean, {min:0, max:3000}, '3×3 Focal Mean');
+
+```
+
+```javascript
+// Per-band summary (reduceRegion on multiband)
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2021-01-01','2021-03-31')
+           .filterBounds(polygon);
+var composite = s2.median();
+var bandStats = composite.reduceRegion({
+  reducer: ee.Reducer.mean(),
+  geometry: polygon,
+  scale: 100
+});
+print('Mean per band:', bandStats);
+```
+
+```javascript
+// Across-band reduction (reduce)
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2021-01-01','2021-12-31')
+           .filterBounds(polygon);
+var composite = s2.median();
+var bandSum = composite.reduce(ee.Reducer.sum());
+Map.addLayer(bandSum, {min:9000, max:15000}, 'Sum across Bands');
+```
+
+```javascript
 // Reducer Image object
 var reducer = ee.Reducer.mean();
 var image = ee.Image('LANDSAT/LC09/C02/T1_L2/LC09_129050_20231220');
@@ -753,6 +882,8 @@ Map.addLayer(rgbMultiBand, {min: 0, max: 3000}, 'RGB select from multiple band')
 ```
 
 ### 21. Band math
+
+#### Calculate NDVI using band math
 ```javascript
 // Calculate NDVI using band math
 var polygon = ee.Geometry.Polygon(
