@@ -29,7 +29,18 @@ var image = ee.Image("LANDSAT/LC08/C01/T1/LC08_044034_20140318");
 var geometry = ee.Geometry.Point([-122.082, 37.42]);
 ```
 
-### 2. Functions
+### 2. Comment
+```javascript
+// Single line comment
+/*
+Multi-line comment
+   This is a multi-line comment
+   that spans multiple lines.
+*/
+
+```
+
+### 3. Functions
 ```javascript
 // function declaration 
 function showMessage() {
@@ -72,17 +83,6 @@ Map.addLayer(medianNDVI, {min: 0, max: 1}, 'Median NDVI');
 
 ```
 
-### 3. Comment
-```javascript
-// Single line comment
-/*
-Multi-line comment
-   This is a multi-line comment
-   that spans multiple lines.
-*/
-
-```
-
 ### 4. if…else Statements
 ```javascript
 // Client-side if…else
@@ -113,7 +113,7 @@ print('Result:', result);  // prints: Result: Positive
 
 ```
 
-### 4. Loops
+### 5. Loops
 ```javascript
 // Client-side for loop
 for (var i = 0; i < 5; i++) {
@@ -149,7 +149,7 @@ var ndviCollection = collection.map(function(image) {
 
 ```
 
-### 4. Object
+### 6. Object
 ```javascript
 var Car = {
     wheels: 4,
@@ -186,7 +186,7 @@ tota.stop = function() {
 tota.start().drive().stop(); 
 ```
 
-### 5. EE Objects and Methods
+### 7. EE Objects and Methods
 ```javascript
 // instance of Earth Engine objects 
 var geometry = ee.Geometry.Polygon(
@@ -233,7 +233,7 @@ Map.setCenter(98.9616, 18.7137);
 Map.addLayer(trueColor432, trueColor432Vis, 'True Color (432)');  
 ```
 
-### 6. Method Chaining
+### 8. Method Chaining
 ```javascript
 // Non-chaining methods
 var image = ee.Image('LANDSAT/LC09/C02/T1_TOA/LC09_131047_20240103');
@@ -269,7 +269,7 @@ Map.addLayer(filtered, {min: 0, max: 1}, 'Mean NDVI');
 
 ```
 
-### 7. Image
+### 9. Image
 ```javascript
 // Image object
 var image = ee.Image('LANDSAT/LC09/C02/T1_L2/LC09_129050_20231220');
@@ -323,7 +323,7 @@ Map.addLayer(image, trueColor, 'Landsat 9 True Color');
 
 ```
 
-### 7. Image Collection
+### 10. Image Collection
 ```javascript
 // Image Collection object sentinel 2 with cloud mask and median composite
 var geometry = ee.Geometry.Polygon(
@@ -341,7 +341,7 @@ Map.centerObject(geometry, 10);
 Map.addLayer(collection, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'Median Image');
 ```
 
-### 8. Geometry
+### 11. Geometry
 ```javascript
 // Geometry object
 var point = ee.Geometry.Point([98.9171009716561, 18.815619476862654]);
@@ -369,7 +369,7 @@ Map.addLayer(buffer, {color: 'blue'}, 'Buffer');
 Map.addLayer(centroid, {color: 'green'}, 'Centroid');  
 ```
 
-### 9. Feature
+### 12. Feature
 ```javascript
 // Feature object
 var point = ee.Geometry.Point([98.9171009716561, 18.815619476862654]);
@@ -389,7 +389,7 @@ Map.centerObject(feature, 10);
 Map.addLayer(feature, {color: 'red'}, 'Feature');
 ```
 
-### 10. Feature Collection
+### 13. Feature Collection
 ```javascript
 // Feature Collection object
 var point1 = ee.Geometry.Point([98.9171009716561, 18.815619476862654]);
@@ -403,7 +403,7 @@ Map.centerObject(featureCollection, 10);
 Map.addLayer(featureCollection, {color: 'red'}, 'Feature Collection');
 ```
 
-### 11. Reducer
+### 14. Reducer
 ```javascript
 // Reducer Image object
 var reducer = ee.Reducer.mean();
@@ -453,7 +453,7 @@ var meanPopulation = featureCollection.reduceColumns({
 print('Mean Population:', meanPopulation.get('mean'));  // prints: Mean Population: 4000000
 ```
 
-### 12. join
+### 15. join
 ```javascript
 // Define point and polygon collections
 var points = ee.FeatureCollection([
@@ -496,7 +496,7 @@ Map.addLayer(result, {color: 'purple'}, 'Spatial Join');
 
 ```
 
-### 13. images properties
+### 16. images properties
 ```javascript
 var polygon = ee.Geometry.Polygon(
     [[[98.9171009716561, 18.815619476862654],
@@ -544,7 +544,29 @@ Map.centerObject(polygon, 10);
 Map.addLayer(collection, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'Image Collection');
 ```
 
-#### 14 Map
+#### 17 Map object
+```javascript
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var collection = ee.ImageCollection('COPERNICUS/S2')
+    .filterDate('2025-01-01', '2025-03-31')
+    .filterBounds(polygon)
+Map.centerObject(collection, 8); 
+Map.addLayer(
+  collection,             // eeObject
+  {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, // visParams
+  'Image Collection',      // name
+  false,                   // shown (hidden by default)
+  0.5                      // opacity (50% transparent)
+);
+
+```
+
+#### 18 Viuslization
 ```javascript
 var polygon = ee.Geometry.Polygon(
     [[[98.9171009716561, 18.815619476862654],
@@ -617,3 +639,236 @@ Map.addLayer(
 );
 
 ```
+
+### 19. Filter  
+```javascript
+// Filter by date
+var collection = ee.ImageCollection('COPERNICUS/S2')
+    .filterDate('2025-01-01', '2025-03-31')   // Filter method by date
+Map.addLayer(collection, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'Image Collection');
+
+// Filter by bounds
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+var collection = ee.ImageCollection('COPERNICUS/S2')
+    .filterDate('2025-01-01', '2025-03-31')   // Filter method by date
+    .filterBounds(polygon)                    // Filter method by bounds
+Map.centerObject(polygon, 10);
+Map.addLayer(collection, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'Image Collection');
+
+// Filter by cloudy pixel percentage
+var collection = ee.ImageCollection('COPERNICUS/S2')
+    .filterDate('2025-01-01', '2025-03-31')   // Filter method by date
+    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))  // Filter method by property
+    .filterBounds(polygon)                    // Filter method by bounds
+Map.centerObject(polygon, 10);
+Map.addLayer(collection, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'Image Collection');
+
+// Filter country
+var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
+    .filter(ee.Filter.eq('country_na', 'Thailand'));  // Filter method by property
+Map.centerObject(countries, 10);
+Map.addLayer(countries, {color: 'red'}, 'Country');
+```
+
+### 20. Band and band selection
+```javascript
+// Define a region of interest (ROI)
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+// Load the Sentinel-2 ImageCollection and filter by date & ROI
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2025-02-01', '2025-06-28')
+           .filterBounds(polygon);
+
+// Create a median composite from the collection
+var composite = s2.median();
+
+// Print band names and image property keys to the Console
+print('Band names:', composite.bandNames());
+print('Image property names:', composite.propertyNames());
+
+// Define visualization parameters
+//    True Color: Red = B4, Green = B3, Blue = B2
+var trueColorVis = {
+  bands: ['B4', 'B3', 'B2'],
+  min:   0,
+  max:   3000,
+  gamma: 0.5
+};
+
+// False Color (NIR + Red + Green): NIR = B8, Red = B4, Green = B3
+var falseColorVis = {
+  bands: ['B8', 'B4', 'B3'],
+  min:   0,
+  max:   3000,
+  gamma: 0.5
+};
+
+// Center the Map on the composite and add the layers
+Map.centerObject(polygon);  
+Map.addLayer(composite, trueColorVis,  'True Color Composite');
+Map.addLayer(composite, falseColorVis, 'False Color Composite', false, 0.8);
+
+
+// band selection and add to new object
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+// Load the Sentinel-2 ImageCollection and filter by date & ROI
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2025-02-01', '2025-06-28')
+           .filterBounds(polygon);
+
+// Create a median composite from the collection
+var composite = s2.median();
+
+// Select single bands
+var band4 = composite.select('B4');
+var band3 = composite.select('B3');
+var band2 = composite.select('B2');
+
+// rename bands
+band4 = band4.rename('Red');
+band3 = band3.rename('Green');
+band2 = band2.rename('Blue');
+var rgbSingleBand = band4.addBands(band3).addBands(band2);
+
+// Select multiple bands name
+var rgbMultiBand = composite.select(['B4', 'B3', 'B2']);
+
+Map.centerObject(polygon, 10);
+Map.addLayer(rgbSingleBand, {min: 0, max: 3000}, 'RGB select from single band');
+Map.addLayer(rgbMultiBand, {min: 0, max: 3000}, 'RGB select from multiple band');
+```
+
+### 21. Band math
+```javascript
+// Calculate NDVI using band math
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]); 
+
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2025-02-01', '2025-06-28')
+           .filterBounds(polygon);
+
+// Create a median composite from the collection
+var composite = s2.median();
+// Select bands for NDVI calculation
+var nirBand = composite.select('B8');  // NIR band
+var redBand = composite.select('B4');  // Red band
+
+Map.centerObject(polygon, 10);
+Map.addLayer(composite, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'RGB Composite');
+
+// Calculate NDVI
+var ndvi = nirBand.subtract(redBand).divide(nirBand.add(redBand)).rename('NDVI');
+
+// Add NDVI to the composite
+var compositeWithNDVI = composite.addBands(ndvi);
+
+// Print NDVI image
+print('NDVI Image:', compositeWithNDVI);
+
+// Define visualization parameters for NDVI
+var ndviVis = {
+  min: -1,
+  max: 1,
+  palette: ['blue', 'white', 'green']
+};
+
+// Add NDVI layer to the map
+Map.addLayer(compositeWithNDVI.select('NDVI'), ndviVis, 'NDVI');
+```
+
+```javascript
+// Calculate NDVI using normalizedDifference() method
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2025-02-01', '2025-06-28')
+           .filterBounds(polygon);
+// Create a median composite from the collection
+var composite = s2.median();
+// Select bands for NDVI calculation
+var nirBand = composite.select('B8');  // NIR band
+var redBand = composite.select('B4');  // Red band
+// normalizedDifference() method
+var ndvi = composite.normalizedDifference(['B8', 'B4']).rename('NDVI');
+// Add NDVI to the composite
+var compositeWithNDVI = composite.addBands(ndvi);
+// Print NDVI image
+print('NDVI Image:', compositeWithNDVI);
+// Define visualization parameters for NDVI
+var ndviVis = {
+  min: -1,
+  max: 1,
+  palette: ['blue', 'white', 'green']
+};
+// Add NDVI layer to the map
+Map.addLayer(compositeWithNDVI.select('NDVI'), ndviVis, 'NDVI');    
+```
+
+```javascript
+// EVI calculation using image.expression() and band math
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+var s2 = ee.ImageCollection('COPERNICUS/S2')
+           .filterDate('2025-02-01', '2025-06-28')
+           .filterBounds(polygon);
+// Create a median composite from the collection
+var composite = s2.median();
+
+// Select bands for EVI calculation
+var nirBand = composite.select('B8');  // NIR band
+var redBand = composite.select('B4');  // Red band
+var blueBand = composite.select('B2');  // Blue band
+
+// Calculate EVI with image.expression
+var evi_exp = composite.expression(
+  '2.5 * ((NIR - RED) / (NIR + 6 * RED - 7.5 * BLUE + 1))', {
+    'NIR': nirBand,
+    'RED': redBand,
+    'BLUE': blueBand
+}).rename('EVIexp');
+
+// Calculate EVI with band math
+var evi_funct = nirBand.subtract(redBand).divide(nirBand.add(redBand.multiply(6)).subtract(blueBand.multiply(7.5)).add(1)).multiply(2.5).rename('EVIfunct');
+
+// Add EVI to the composite
+var compositeWithEVIexp = composite.addBands(evi_exp);
+var compositeWithEVIfunct = composite.addBands(evi_funct);
+
+// Print EVI image
+print('EVI Image:', compositeWithEVIexp);
+print('EVI Image:', compositeWithEVIfunct);
+// Define visualization parameters for EVI
+var eviVis = {
+  min: -1,
+  max: 1,
+  palette: ['blue', 'white', 'green']
+};
+// Add EVI layer to the map 
+Map.addLayer(compositeWithEVIexp.select('EVIexp'), eviVis, 'EVI');
+Map.addLayer(compositeWithEVIfunct.select('EVIfunct'), eviVis, 'EVI');
+```
+
