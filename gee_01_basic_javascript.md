@@ -496,3 +496,124 @@ Map.addLayer(result, {color: 'purple'}, 'Spatial Join');
 
 ```
 
+### 13. images properties
+```javascript
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var collection = ee.ImageCollection('COPERNICUS/S2')
+    .filterDate('2025-01-01', '2025-03-31')
+    .filterBounds(polygon)
+    .select(['B4', 'B3', 'B2']) 
+
+// get image count
+var imageCount = coll ection.size();
+print('Image Count:', imageCount); 
+// get image list
+var imageList = collection.toList(imageCount);
+print('Image List:', imageList);  
+// get first image
+var firstImage = ee.Image(imageList.get(0));
+print('First Image:', firstImage); 
+// get image properties
+var imageProperties = firstImage.propertyNames();
+print('Image Properties:', imageProperties); 
+// get image bands
+var imageBands = firstImage.bandNames();
+print('Image Bands:', imageBands);  
+// get image metadata
+var imageMetadata = firstImage.getInfo();
+print('Image Metadata:', imageMetadata);  
+// get image date
+var imageDate = firstImage.date();
+print('Image Date:', imageDate); 
+// get image geometry
+var imageGeometry = firstImage.geometry();
+print('Image Geometry:', imageGeometry); 
+// get image scale
+var imageScale = firstImage.select('B4').projection().nominalScale();
+print('Image Scale:', imageScale);  
+// get image projection
+var imageProjection = firstImage.select('B4').projection();
+print('Image Projection:', imageProjection); 
+
+Map.centerObject(polygon, 10);
+Map.addLayer(collection, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'Image Collection');
+```
+
+#### 14 Map
+```javascript
+var polygon = ee.Geometry.Polygon(
+    [[[98.9171009716561, 18.815619476862654],
+      [98.9171009716561, 18.68557890893041],
+      [99.0873890575936, 18.68557890893041],
+      [99.0873890575936, 18.815619476862654]]]);
+
+var collection = ee.ImageCollection('COPERNICUS/S2')
+    .filterDate('2025-01-01', '2025-03-31')
+    .filterBounds(polygon)
+
+var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
+    .filter(ee.Filter.eq('country_na', 'Thailand'));
+
+var dem = ee.Image('USGS/SRTMGL1_003');
+
+var rgbVis = {
+  bands: ['B4', 'B3', 'B2'],  // Use red, green, blue bands
+  min: 0,                     // Map pixel values from 0
+  max: 3000,                  // to 3000
+  gamma: 1.1                  // Apply slight gamma correction
+};
+
+var demVis = {
+  min: 0,                      // lowest elevation (meters)
+  max: 3000,                   // highest elevation (meters)
+  palette: [
+    '0000ff',                  // deep water (if below 0)
+    '00ffff',                  // sea level
+    '00ff00',                  // lowlands
+    'ffff00',                  // mid elevations
+    'ff7f00',                  // high elevations
+    'ffffff'                   // peaks
+  ]
+};
+
+var countryStyle = {
+  color: 'FF0000',            // Red outline
+  fillColor: 'FF000022',      // Translucent red fill
+  width: 1                    // 1-pixel wide border
+};
+
+Map.centerObject(collection, 8);   // Zoom level 8
+
+// Add the RGB image layer
+Map.addLayer(
+  collection,               // eeObject
+  rgbVis,                   // visParams
+  'Sentinel-2 RGB',         // name
+  true,                     // shown
+  0.8                       // opacity
+);
+
+// Add the DEM layer
+Map.addLayer(
+  dem,                     // eeObject
+  demVis,                  // visParams
+  'SRTM DEM',              // name
+  false,                   // shown (hidden by default)
+  0.5                      // opacity (50% transparent)
+);
+
+// Add the country borders layer
+Map.addLayer(
+  countries,                // eeObject
+  countryStyle,             // visParams
+  'Country Borders',        // name
+  false,                    // shown (hidden by default)
+  1.0                       // opacity (fully opaque)
+);
+
+```
