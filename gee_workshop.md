@@ -187,6 +187,7 @@ tota.start().drive().stop();
 ```
 
 ### 7. EE Objects and Methods
+#### Earth Engine objects
 ```javascript
 // instance of Earth Engine objects 
 var geometry = ee.Geometry.Polygon(
@@ -206,8 +207,9 @@ print('Area:', area);
 // Map methods
 Map.centerObject(feature, 10); 
 Map.addLayer(feature, {color: 'red'}, 'Feature'); 
-
-
+```
+#### Earth Engine objects for image and image collection
+```javascript
 // instance of Earth Engine objects for image 
 var image = ee.Image('LANDSAT/LC09/C02/T1_TOA/LC09_131047_20240103');
 // methods of Earth Engine objects for image
@@ -421,7 +423,7 @@ var meanTime = s2.reduce(ee.Reducer.mean());
 
 Map.addLayer(meanTime, {bands:['B4_mean','B3_mean','B2_mean'], min:0, max:3000}, 'Mean per Pixel over Time');
 ```
-
+#### Histogram
 ```javascript
 // Grouped by time
 var polygon = ee.Geometry.Polygon(
@@ -453,7 +455,7 @@ var chart = ui.Chart.array.values(monthlyCount, 0, months)
     });
 print(chart);
 ```
-
+#### Image statistics (reduceRegion)
 ```javascript
 // Regional statistics (reduceRegion)
 var polygon = ee.Geometry.Polygon(
@@ -476,7 +478,7 @@ var stats = meanTime.reduceRegion({
 });
 print('Mean & Max over polygon:', stats);
 ```
-
+#### Neighborhood / Focal operations (reduceNeighborhood)
 ```javascript
 var polygon = ee.Geometry.Polygon(
     [[[98.9171009716561, 18.815619476862654],
@@ -496,7 +498,7 @@ var focalMean = meanTime.reduceNeighborhood({
 Map.addLayer(focalMean, {min:0, max:3000}, '3×3 Focal Mean');
 
 ```
-
+#### Per-band summary (reduceRegion on multiband)
 ```javascript
 // Per-band summary (reduceRegion on multiband)
 var polygon = ee.Geometry.Polygon(
@@ -516,7 +518,7 @@ var bandStats = composite.reduceRegion({
 });
 print('Mean per band:', bandStats);
 ```
-
+#### Across-band summary (reduceRegion on multiband)
 ```javascript
 // Across-band reduction (reduce)
 var polygon = ee.Geometry.Polygon(
@@ -532,7 +534,7 @@ var composite = s2.median();
 var bandSum = composite.reduce(ee.Reducer.sum());
 Map.addLayer(bandSum, {min:9000, max:15000}, 'Sum across Bands');
 ```
-
+#### Reducer Image object
 ```javascript
 // Reducer Image object
 var reducer = ee.Reducer.mean();
@@ -924,7 +926,7 @@ var ndviVis = {
 // Add NDVI layer to the map
 Map.addLayer(compositeWithNDVI.select('NDVI'), ndviVis, 'NDVI');
 ```
-
+#### Calculate NDVI using normalizedDifference() method
 ```javascript
 // Calculate NDVI using normalizedDifference() method
 var polygon = ee.Geometry.Polygon(
@@ -955,7 +957,7 @@ var ndviVis = {
 // Add NDVI layer to the map
 Map.addLayer(compositeWithNDVI.select('NDVI'), ndviVis, 'NDVI');    
 ```
-
+#### Calculate EVI using image.expression() and band math
 ```javascript
 // EVI calculation using image.expression() and band math
 var polygon = ee.Geometry.Polygon(
