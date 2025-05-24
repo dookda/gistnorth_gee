@@ -38,3 +38,6 @@ var demVis = {
         'F5F5F5'
     ]
 };
+
+
+Export.image.toDrive(image, description, folder, fileNamePrefix, dimensions, region, scale, crs, crsTransform, maxPixels, shardSize, fileDimensions, skipEmptyTiles, fileFormat, formatOptions, priority)
