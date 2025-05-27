@@ -63,8 +63,8 @@ Map.addLayer(
   collection,             // eeObject
   {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, // visParams
   'Image Collection',      // name
-  false,                   // shown (hidden by default)
-  0.5                      // opacity (50% transparent)
+  true,                   // shown (hidden by default)
+  0.8                      // opacity (80% transparent)
 );
 
 ```
@@ -415,7 +415,6 @@ var clippedComposite = ee.ImageCollection('COPERNICUS/S2')
            .filterBounds(polygon)
            .map(clipImage)
            .median()
-           .clip(polygon);
 Map.centerObject(polygon, 10);
 Map.addLayer(clippedComposite, {bands: ['B4', 'B3', 'B2'], min: 500, max: 3000}, 'Clipped Composite');
 
