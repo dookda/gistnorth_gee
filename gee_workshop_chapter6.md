@@ -13,7 +13,7 @@ var collection = ee.ImageCollection('COPERNICUS/S2')
     .select(['B4', 'B3', 'B2']) 
 
 // get image count
-var imageCount = coll ection.size();
+var imageCount = collection.size();
 print('Image Count:', imageCount); 
 // get image list
 var imageList = collection.toList(imageCount);
