@@ -178,6 +178,7 @@ Map.addLayer(countries, {color: 'red'}, 'Country');
 ```
 
 ### 5 Band and band selection
+#### Create a median composite and select bands
 ```javascript
 // Define a region of interest (ROI)
 var polygon = ee.Geometry.Polygon(
@@ -220,6 +221,9 @@ Map.centerObject(polygon);
 Map.addLayer(composite, trueColorVis,  'True Color Composite');
 Map.addLayer(composite, falseColorVis, 'False Color Composite', false, 0.8);
 
+```
+#### Band selection and add to new object
+```javascript
 
 // band selection and add to new object
 var polygon = ee.Geometry.Polygon(
