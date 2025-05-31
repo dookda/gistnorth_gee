@@ -66,6 +66,14 @@ var value = 100;
 * Array: กลุ่มข้อมูล เช่น \[1, 2, 3]
 * Object: เช่น `{name: 'Thailand', area: 513000}`
 
+```javascript
+var number = 42;                  // Number
+var text = "Hello, Earth!";       // String
+var boolean = true;               // Boolean
+var list = [1, 2, 3, 4];          // Array
+var object = {key: "value"};      // Object
+```
+
 ---
 
 #### สไลด์ที่ 6: การใช้ Array และ Object
