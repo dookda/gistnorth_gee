@@ -1,14 +1,19 @@
 ### 1. Image
+#### Image object
 ```javascript
 // Image object
-var image = ee.Image('LANDSAT/LC09/C02/T1_L2/LC09_129050_20231220');
+var image = ee.Image('LANDSAT/LC09/C02/T1_L2/LC09_129050_20231220')
+              .multiply(0.0000275);
 var band4 = image.select('SR_B4');
 var band3 = image.select('SR_B3');
 var band2 = image.select('SR_B2');
 var rgb = band4.addBands(band3).addBands(band2);
 Map.centerObject(image, 10);
-Map.addLayer(rgb, {min: 8000, max: 11000}, 'RGB');
+Map.addLayer(rgb, {min: 0.2, max: 0.6, gamma: 2.0}, 'RGB');
 
+```
+#### Image from ImageCollection
+```javascript
 // Image from ImageCollection
 var bangkok = ee.Geometry.Point([100.5018, 13.7563]);
 // Load Landsat 9 Collection 2 Tier 1 raw data
