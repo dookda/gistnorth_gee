@@ -1,7 +1,7 @@
 site_name: Google Earth Engine Workshop (GISTNORTH)
-site_url: https://gistnorth.github.io/gistnorth_gee/
+site_url: https://dookda.github.io/gistnorth_gee/
 site_author: GISTNORTH, Chiang Mai University
-repo_url: https://github.com/gistnorth/gistnorth_gee
+repo_url: https://github.com/dookda/gistnorth_gee
 
 theme:
   name: material

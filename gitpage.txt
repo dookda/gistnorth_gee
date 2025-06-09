@@ -1,0 +1,11 @@
+pip install mkdocs-material
+
+# see example
+mkdocs serve
+
+# create a new mkdocs project
+mkdocs new my-project
+
+# deploy to GitHub Pages
+mkdocs gh-deploy
+
