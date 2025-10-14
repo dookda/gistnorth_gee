@@ -258,17 +258,6 @@ Export.image.toDrive({
 });
 ```
 
-ตัวอย่างการส่งออกข้อมูลแบบ band เดียว (Export DEM)
-```javascript
-Export.image.toDrive({
-  image: dem,
-  description: 'DEM_Export',
-  scale: 30,
-  region: roi,
-  maxPixels: 1e13
-});
-``` 
-
 ## 📚 แหล่งเรียนรู้เพิ่มเติม
 - [https://developers.google.com/earth-engine](https://developers.google.com/earth-engine)
 - [https://gee-community-catalog.org](https://gee-community-catalog.org)
