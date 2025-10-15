@@ -184,6 +184,8 @@ Map.centerObject(image, 10);
 
 ข้อมูล DEM (Digital Elevation Model) เช่น SRTM, ALOS, ASTER ก็ถือเป็น Image หนึ่งภาพเช่นกัน
 
+> **หมายเหตุ:** SRTM DEM (`USGS/SRTMGL1_003`) มีความละเอียดเชิงพื้นที่ประมาณ 30 เมตร และครอบคลุมพื้นที่ส่วนใหญ่ของโลกระหว่างละติจูด 60°N ถึง 56°S
+
 ```javascript
 // ตัวอย่างการเรียกใช้งาน DEM
 var dem = ee.Image('USGS/SRTMGL1_003');
@@ -226,15 +228,93 @@ Map.centerObject(roi, 10);
 
 การประมวลผลภาพจากดาวเทียมหมายถึง กระบวนการจัดการ ปรับปรุง วิเคราะห์ และแปลความหมายข้อมูลภาพจากดาวเทียม เพื่อนำมาใช้ประโยชน์ในการวางแผนและตัดสินใจทางภูมิสารสนเทศ  เช่น NDVI และ MNDWI 
 
-### ตัวอย่างโค้ด
+ตัวอย่างการวิเคราะห์ ดัชนีความแตกต่างพืชพรรณ (Normalized Difference Vegetation Index: NDVI) 
 ```javascript
 var ndvi = s2.normalizedDifference(['B8', 'B4']).rename('NDVI');
 var ndviVis = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
 Map.addLayer(ndvi, ndviVis, 'NDVI');
+```
 
+การวิเคราะห์พื้นที่สีเขียวในเมือง (Urban Green Space - UGS) ด้วย NDVI
+```javascript
+var ndviThreshold = 0.3; // กำหนดค่าเกณฑ์ NDVI
+var ugs = ndvi.gte(ndviThreshold).rename('UGS');
+var ugsVis = {min: 0, max: 1, palette: ['lightgrey', 'green']};
+Map.addLayer(ugs, ugsVis, 'Urban Green Space (UGS)');
+
+```
+
+การคำนวณสัดส่วนพื้นที่สีเขียวในเมือง
+```javascript
+var ugsArea = ugs.multiply(ee.Image.pixelArea()).divide(1e6); // แปลงเป็นตารางกิโลเมตร
+var totalUgsArea = ugsArea.reduceRegion({
+  reducer: ee.Reducer.sum(),
+  geometry: roi,
+  scale: 10,
+  maxPixels: 1e13
+});
+print('Total Urban Green Space Area (km²):', totalUgsArea);
+```
+
+และดัชนีความแตกต่างน้ำ (Modified Normalized Difference Water Index: MNDWI)
+```javascript
 var mndwi = s2.normalizedDifference(['B3', 'B11']).rename('MNDWI');
 var mndwiVis = {min: -1, max: 1, palette: ['brown', 'white', 'blue']};
 Map.addLayer(mndwi, mndwiVis, 'MNDWI');
+```
+
+การวิเคราะห์พื้นที่น้ำในเมืองด้วย MNDWI
+```javascript
+var mndwiThreshold = 0.3; // กำหนดค่าเกณฑ์ MNDWI
+var water = mndwi.gte(mndwiThreshold).rename('Water');
+var waterVis = {min: 0, max: 1, palette: ['lightgrey', 'blue']};
+Map.addLayer(water, waterVis, 'Urban Water Bodies');
+```
+
+การคำนวณสัดส่วนพื้นที่น้ำในเมือง
+```javascript
+var waterArea = water.multiply(ee.Image.pixelArea()).divide(1e6); // แปลงเป็นตารางกิโลเมตร
+var totalWaterArea = waterArea.reduceRegion({
+  reducer: ee.Reducer.sum(),
+  geometry: roi,
+  scale: 10,
+  maxPixels: 1e13
+});
+print('Total Urban Water Bodies Area (km²):', totalWaterArea);
+```
+
+ดัชนีพื้นที่สิ่งปลูกสร้าง (Normalized Difference Built-up Index: NDBI)
+```javascript
+var ndbi = s2.normalizedDifference(['B11', 'B8']).rename('NDBI');
+var ndbiVis = {min: -1, max: 1, palette: ['green', 'white', 'grey']};
+Map.addLayer(ndbi, ndbiVis, 'NDBI');
+```
+
+การวิเคราะห์พื้นที่สิ่งปลูกสร้างในเมืองด้วย NDBI
+```javascript
+var ndbiThreshold = 0.2; // กำหนดค่าเกณฑ์ NDBI
+var builtUp = ndbi.gte(ndbiThreshold).rename('BuiltUp');
+var builtUpVis = {min: 0, max: 1, palette: ['lightgrey', 'grey']};
+Map.addLayer(builtUp, builtUpVis, 'Urban Built-up Areas');
+```
+
+การคำนวณสัดส่วนพื้นที่สิ่งปลูกสร้างในเมือง
+```javascript
+var builtUpArea = builtUp.multiply(ee.Image.pixelArea()).divide(1e6); // แปลงเป็นตารางกิโลเมตร
+var totalBuiltUpArea = builtUpArea.reduceRegion({
+  reducer: ee.Reducer.sum(),
+  geometry: roi,
+  scale: 10,
+  maxPixels: 1e13
+});
+print('Total Urban Built-up Area (km²):', totalBuiltUpArea);
+```
+
+สัดส่วนพื้นที่สีเขียว, น้ำ และสิ่งปลูกสร้างในเมือง
+```javascript
+// สัดส่วนพื้นที่สีเขียวต่อต้านพื้นที่สิ่งปลูกสร้าง
+var greenToBuiltUpRatio = ee.Number(totalUgsArea.get('UGS')).divide(ee.Number(totalBuiltUpArea.get('BuiltUp')));
+print("greenToBuiltUpRatio", greenToBuiltUpRatio);
 ```
 
 ---
@@ -247,14 +327,14 @@ Map.addLayer(mndwi, mndwiVis, 'MNDWI');
 ตัวอย่างการส่งออกภาพแบบหลาย bands (Export Image)
 ```javascript
 Export.image.toDrive({
-  image: s2,
-  description: 'Sentinel2_Median_Jan2021',
-  folder: 'GEE_Exports',
-  fileNamePrefix: 'S2_Median_Jan2021',
-  region: roi,
-  scale: 10,
-  crs: 'EPSG:4326',
-  maxPixels: 1e13
+  image: s2, // ภาพที่ต้องการส่งออก
+  description: 'Sentinel2_Median_Jan2021', // ชื่อไฟล์ใน Google Drive
+  folder: 'GEE_Exports', // ชื่อโฟลเดอร์ใน Google Drive
+  fileNamePrefix: 'S2_Median_Jan2021', // ชื่อไฟล์นำหน้า
+  region: roi, // พื้นที่ที่ต้องการส่งออก
+  scale: 10, // ความละเอียดเชิงพื้นที่ (เมตร)
+  crs: 'EPSG:4326', // ระบบพิกัด
+  maxPixels: 1e13 // จำนวนพิกเซลสูงสุดที่อนุญาตให้ส่งออก
 });
 ```
 
